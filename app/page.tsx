@@ -699,7 +699,7 @@ export default function Home() {
         </section>
 
         <footer>
-          <span className="footer-owner">@peppikim_</span>
+          <span className="footer-owner">@peppiiiii_</span>
           <span aria-hidden="true">·</span>
           <a href="https://github.com/en-chovy/cortis-rps-chart" target="_blank" rel="noreferrer">
             Original: cortis-rps-chart by 쵸비
