@@ -487,7 +487,7 @@ export default function Home() {
         legendX += legendWidths[index];
       });
 
-      const creditOwner = "@peppikim_";
+      const creditOwner = "@peppiiiii_";
       const creditSource = " · Original: cortis-rps-chart by 쵸비";
       context.textAlign = "left";
       context.fillStyle = "#aeb2b6";
