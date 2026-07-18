@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "핱페스 취향표",
     description:
-      "H핱페스 취향표를 자동 생성해주는 도구입니다.",
+      "핱페스 취향표를 자동 생성해주는 도구입니다.",
     images: ["/twitter-image.png"],
   },
 
