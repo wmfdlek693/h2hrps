@@ -302,7 +302,8 @@ p {
 }
 
 .pair-cell {
-  color: #777b80;
+  font-family: "GmarketSansBold", Pretendard, "Noto Sans KR", sans-serif;
+  color: #000;
   font-size: clamp(11.5px, 1.85vw, 20px);
   font-weight: 700;
   letter-spacing: -0.035em;
