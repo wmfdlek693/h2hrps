@@ -453,7 +453,7 @@ export default function Home() {
             continue;
           } else {
             const legend = legendMap.get(state.chart.cells[`${row}-${column}`] ?? "");
-            context.fillStyle = legend?.id === "mine" ? "#ffffff" : "#777b80";
+            context.fillStyle = legend?.id === "mine" ? "#ffffff" : "#000000";
             context.font = "700 20px Pretendard, Arial, sans-serif";
             context.fillText(PAIR_NAMES[row][column], x, y);
           }
