@@ -7,13 +7,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://peppi-h2hrps.vercel.app"),
 
   title: "핱페스 취향표",
-  description:
-    "핱페스 취향표를 자동 생성해주는 도구입니다.",
+  description: "핱페스 취향표를 자동 생성해주는 도구입니다.",
 
   openGraph: {
     title: "핱페스 취향표",
-    description:
-      "핱페스 취향표를 자동 생성해주는 도구입니다.",
+    description: "핱페스 취향표를 자동 생성해주는 도구입니다.",
     url: "https://peppi-h2hrps.vercel.app",
     siteName: "핱페스 취향표",
     images: [
@@ -21,7 +19,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "Hearts2Hearts RPS 취향표",
+        alt: "핱페스 취향표",
       },
     ],
     type: "website",
@@ -30,8 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "핱페스 취향표",
-    description:
-      "핱페스 취향표를 자동 생성해주는 도구입니다.",
+    description: "핱페스 취향표를 자동 생성해주는 도구입니다.",
     images: ["/twitter-image.png"],
   },
 
@@ -44,3 +41,20 @@ export const metadata: Metadata = {
     shortcut: "/favicon.svg",
   },
 };
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="ko">
+      <body>{children}</body>
+    </html>
+  );
+}
