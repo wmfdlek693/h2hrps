@@ -51,25 +51,25 @@ const MEMBERS: Member[] = [
 ];
 
 const ROW_GROUP_NAMES = [
-  "1왼",
-  "2왼",
-  "3왼",
-  "4왼",
-  "5왼",
-  "6왼",
-  "7왼",
-  "8왼",
+  "1公",
+  "2公",
+  "3公",
+  "4公",
+  "5公",
+  "6公",
+  "7公",
+  "8公",
 ] as const;
 
 const COLUMN_GROUP_NAMES = [
-  "1른",
-  "2른",
-  "3른",
-  "4른",
-  "5른",
-  "6른",
-  "7른",
-  "8른",
+  "1嬷",
+  "2嬷",
+  "3嬷",
+  "4嬷",
+  "5嬷",
+  "6嬷",
+  "7嬷",
+  "8嬷",
 ] as const;
 
 const DEFAULT_LEGENDS: Legend[] = [
@@ -102,8 +102,7 @@ function loadCanvasImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = document.createElement("img");
     image.onload = () => resolve(image);
-    image.onerror = () =>
-      reject(new Error("Logo image could not be loaded"));
+    image.onerror = () => reject(new Error("Logo image could not be loaded"));
     image.src = src;
   });
 }
@@ -113,9 +112,7 @@ function createEmptyCells() {
 
   MEMBERS.forEach((_, row) => {
     MEMBERS.forEach((__, column) => {
-      if (row !== column) {
-        cells[`${row}-${column}`] = null;
-      }
+      if (row !== column) cells[`${row}-${column}`] = null;
     });
   });
 
@@ -144,19 +141,13 @@ function chartsMatch(a: ChartData, b: ChartData) {
 
 function reducer(state: AppState, action: AppAction): AppState {
   if (action.type === "load") {
-    return {
-      chart: action.chart,
-      undo: [],
-      redo: [],
-    };
+    return { chart: action.chart, undo: [], redo: [] };
   }
 
   if (action.type === "commit") {
     const next = action.change(cloneChart(state.chart));
 
-    if (chartsMatch(state.chart, next)) {
-      return state;
-    }
+    if (chartsMatch(state.chart, next)) return state;
 
     return {
       chart: next,
@@ -171,25 +162,18 @@ function reducer(state: AppState, action: AppAction): AppState {
   if (action.type === "undo") {
     const previous = state.undo.at(-1);
 
-    if (!previous) {
-      return state;
-    }
+    if (!previous) return state;
 
     return {
       chart: cloneChart(previous),
       undo: state.undo.slice(0, -1),
-      redo: [cloneChart(state.chart), ...state.redo].slice(
-        0,
-        HISTORY_LIMIT,
-      ),
+      redo: [cloneChart(state.chart), ...state.redo].slice(0, HISTORY_LIMIT),
     };
   }
 
   const next = state.redo[0];
 
-  if (!next) {
-    return state;
-  }
+  if (!next) return state;
 
   return {
     chart: cloneChart(next),
@@ -202,9 +186,7 @@ function reducer(state: AppState, action: AppAction): AppState {
 }
 
 function restoreSavedChart(value: unknown): ChartData | null {
-  if (!value || typeof value !== "object") {
-    return null;
-  }
+  if (!value || typeof value !== "object") return null;
 
   const candidate = value as Partial<ChartData>;
 
@@ -217,9 +199,7 @@ function restoreSavedChart(value: unknown): ChartData | null {
   const cells = createEmptyCells();
 
   Object.keys(cells).forEach((key) => {
-    const savedValue = (
-      candidate.cells as Record<string, unknown>
-    )[key];
+    const savedValue = (candidate.cells as Record<string, unknown>)[key];
 
     cells[key] =
       typeof savedValue === "string" && validIds.has(savedValue)
@@ -270,9 +250,7 @@ function Icon({
 }) {
   if (name === "undo" || name === "redo") {
     const transform =
-      name === "redo"
-        ? "scale(-1 1) translate(-24 0)"
-        : undefined;
+      name === "redo" ? "scale(-1 1) translate(-24 0)" : undefined;
 
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -315,8 +293,7 @@ export default function MiddleChart() {
   });
 
   const [hydrated, setHydrated] = useState(false);
-  const [paintTarget, setPaintTarget] =
-    useState<PaintTarget | null>(null);
+  const [paintTarget, setPaintTarget] = useState<PaintTarget | null>(null);
   const [exporting, setExporting] = useState(false);
   const [preparedImage, setPreparedImage] =
     useState<PreparedImage | null>(null);
@@ -324,10 +301,7 @@ export default function MiddleChart() {
   const legendMap = useMemo(
     () =>
       new Map(
-        state.chart.legends.map((legend) => [
-          legend.id,
-          legend,
-        ]),
+        state.chart.legends.map((legend) => [legend.id, legend]),
       ),
     [state.chart.legends],
   );
@@ -363,9 +337,7 @@ export default function MiddleChart() {
   );
 
   useEffect(() => {
-    if (!hydrated) {
-      return;
-    }
+    if (!hydrated) return;
 
     try {
       window.localStorage.setItem(
@@ -396,9 +368,7 @@ export default function MiddleChart() {
 
       const command = event.metaKey || event.ctrlKey;
 
-      if (!command) {
-        return;
-      }
+      if (!command) return;
 
       if (
         event.key.toLowerCase() === "z" &&
@@ -423,47 +393,33 @@ export default function MiddleChart() {
       }
     };
 
-    window.addEventListener(
-      "keydown",
-      handleKeyDown,
-    );
+    window.addEventListener("keydown", handleKeyDown);
 
     return () =>
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown,
-      );
+      window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   function applyPaint(legendId: string | null) {
     const target = paintTarget;
 
-    if (!target) {
-      return;
-    }
+    if (!target) return;
 
     dispatch({
       type: "commit",
 
       change: (chart) => {
         if (target.type === "cell") {
-          chart.cells[
-            `${target.row}-${target.column}`
-          ] = legendId;
+          chart.cells[`${target.row}-${target.column}`] = legendId;
         } else if (target.type === "row") {
           MEMBERS.forEach((_, column) => {
             if (column !== target.index) {
-              chart.cells[
-                `${target.index}-${column}`
-              ] = legendId;
+              chart.cells[`${target.index}-${column}`] = legendId;
             }
           });
         } else {
           MEMBERS.forEach((_, row) => {
             if (row !== target.index) {
-              chart.cells[
-                `${row}-${target.index}`
-              ] = legendId;
+              chart.cells[`${row}-${target.index}`] = legendId;
             }
           });
         }
@@ -476,17 +432,9 @@ export default function MiddleChart() {
   }
 
   function clearChart() {
-    if (
-      !Object.values(state.chart.cells).some(
-        Boolean,
-      )
-    ) {
-      return;
-    }
+    if (!Object.values(state.chart.cells).some(Boolean)) return;
 
-    if (!window.confirm("초기화 할까요?")) {
-      return;
-    }
+    if (!window.confirm("초기화 할까요?")) return;
 
     dispatch({
       type: "commit",
@@ -499,9 +447,7 @@ export default function MiddleChart() {
 
   function targetTitle(target: PaintTarget) {
     if (target.type === "cell") {
-      return PAIR_NAMES[target.row][
-        target.column
-      ];
+      return PAIR_NAMES[target.row][target.column];
     }
 
     if (target.type === "column") {
@@ -514,9 +460,7 @@ export default function MiddleChart() {
   async function downloadChart(
     includeDate = state.chart.showDate,
   ) {
-    if (exporting) {
-      return;
-    }
+    if (exporting) return;
 
     setExporting(true);
 
@@ -524,56 +468,37 @@ export default function MiddleChart() {
       await document.fonts?.load(
         '700 40px "GmarketSansBold"',
       );
-
       await document.fonts?.ready;
 
-      const logoImage =
-        await loadCanvasImage(LOGO_PATH);
+      const logoImage = await loadCanvasImage(LOGO_PATH);
 
       const width = 1080;
       const scale = 2;
       const margin = 54;
-
-      const cellWidth =
-        (width - margin * 2) / 9;
-
+      const cellWidth = (width - margin * 2) / 9;
       const cellHeight = 64;
       const tableY = 194;
-      const tableBottom =
-        tableY + cellHeight * 9;
-
+      const tableBottom = tableY + cellHeight * 9;
       const legendY = tableBottom + 42;
-      const height = Math.ceil(
-        legendY + 72,
-      );
+      const height = Math.ceil(legendY + 72);
 
-      const canvas =
-        document.createElement("canvas");
+      const canvas = document.createElement("canvas");
 
       canvas.width = width * scale;
       canvas.height = height * scale;
 
-      const context =
-        canvas.getContext("2d");
+      const context = canvas.getContext("2d");
 
       if (!context) {
-        throw new Error(
-          "Canvas is unavailable",
-        );
+        throw new Error("Canvas is unavailable");
       }
 
       context.scale(scale, scale);
 
       context.fillStyle = "#ffffff";
-      context.fillRect(
-        0,
-        0,
-        width,
-        height,
-      );
+      context.fillRect(0, 0, width, height);
 
       const logoWidth = 540;
-
       const logoHeight =
         logoWidth *
         (logoImage.naturalHeight /
@@ -669,8 +594,7 @@ export default function MiddleChart() {
               visualColumn === 0);
 
           const row = visualRow - 1;
-          const column =
-            visualColumn - 1;
+          const column = visualColumn - 1;
 
           const isDiagonal =
             row >= 0 &&
@@ -692,8 +616,7 @@ export default function MiddleChart() {
               );
 
             if (legend) {
-              fill =
-                cellFillColor(legend);
+              fill = cellFillColor(legend);
             }
           }
 
@@ -733,7 +656,6 @@ export default function MiddleChart() {
           tableY + index * cellHeight;
 
         context.beginPath();
-
         context.moveTo(margin, y);
 
         context.lineTo(
@@ -768,8 +690,7 @@ export default function MiddleChart() {
             cellHeight / 2;
 
           const row = visualRow - 1;
-          const column =
-            visualColumn - 1;
+          const column = visualColumn - 1;
 
           if (
             visualRow === 0 &&
@@ -777,11 +698,10 @@ export default function MiddleChart() {
           ) {
             continue;
           } else if (visualRow === 0) {
-            context.fillStyle =
-              "#ffffff";
+            context.fillStyle = "#ffffff";
 
             context.font =
-              '700 21px "GmarketSansBold", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif';
+              '700 21px "Microsoft YaHei", "PingFang SC", "Noto Sans SC", "GmarketSansBold", Pretendard, sans-serif';
 
             context.fillText(
               MEMBERS[column].name,
@@ -791,11 +711,10 @@ export default function MiddleChart() {
           } else if (
             visualColumn === 0
           ) {
-            context.fillStyle =
-              "#ffffff";
+            context.fillStyle = "#ffffff";
 
             context.font =
-              '700 21px "GmarketSansBold", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif';
+              '700 21px "Microsoft YaHei", "PingFang SC", "Noto Sans SC", "GmarketSansBold", Pretendard, sans-serif';
 
             context.fillText(
               MEMBERS[row].name,
@@ -910,8 +829,7 @@ export default function MiddleChart() {
             legendY,
           );
 
-          legendX +=
-            legendWidths[index];
+          legendX += legendWidths[index];
         },
       );
 
@@ -1031,15 +949,14 @@ export default function MiddleChart() {
               href="/middle"
               aria-current="page"
             >
-              중버전
+              中国版
             </Link>
           </nav>
 
           <h1>RPS 취향표</h1>
 
           <p className="subtitle">
-            칸을 눌러 취향을 표시해
-            보세요
+            칸을 눌러 취향을 표시해 보세요
           </p>
         </header>
 
@@ -1053,22 +970,18 @@ export default function MiddleChart() {
                 id="chart-title"
                 className="sr-only"
               >
-                Hearts2Hearts 중국어
-                RPS 취향표
+                Hearts2Hearts 중국어 RPS 취향표
               </h2>
 
               <p>
-                멤버 이름을 누르면 그 줄
-                전체를 칠할 수 있어요
+                멤버 이름을 누르면 그 줄 전체를 칠할 수 있어요
               </p>
 
               <span
                 className="auto-save-state"
                 aria-live="polite"
               >
-                <span
-                  aria-hidden="true"
-                />
+                <span aria-hidden="true" />
 
                 {hydrated
                   ? "이 기기에 자동 저장"
@@ -1088,9 +1001,7 @@ export default function MiddleChart() {
                     type: "undo",
                   })
                 }
-                disabled={
-                  !state.undo.length
-                }
+                disabled={!state.undo.length}
                 aria-label="실행 취소"
                 title="실행 취소"
               >
@@ -1105,9 +1016,7 @@ export default function MiddleChart() {
                     type: "redo",
                   })
                 }
-                disabled={
-                  !state.redo.length
-                }
+                disabled={!state.redo.length}
                 aria-label="다시 실행"
                 title="다시 실행"
               >
@@ -1142,33 +1051,23 @@ export default function MiddleChart() {
                   />
 
                   {MEMBERS.map(
-                    (
-                      member,
-                      column,
-                    ) => (
+                    (member, column) => (
                       <th
-                        key={
-                          member.name
-                        }
+                        key={member.name}
                         scope="col"
                       >
                         <button
                           className="member-button"
                           type="button"
                           onClick={() =>
-                            setPaintTarget(
-                              {
-                                type: "column",
-                                index:
-                                  column,
-                              },
-                            )
+                            setPaintTarget({
+                              type: "column",
+                              index: column,
+                            })
                           }
                           aria-label={`${COLUMN_GROUP_NAMES[column]} 전체 칠하기`}
                         >
-                          {
-                            member.name
-                          }
+                          {member.name}
                         </button>
                       </th>
                     ),
@@ -1178,32 +1077,21 @@ export default function MiddleChart() {
 
               <tbody>
                 {MEMBERS.map(
-                  (
-                    rowMember,
-                    row,
-                  ) => (
-                    <tr
-                      key={
-                        rowMember.name
-                      }
-                    >
+                  (rowMember, row) => (
+                    <tr key={rowMember.name}>
                       <th scope="row">
                         <button
                           className="member-button"
                           type="button"
                           onClick={() =>
-                            setPaintTarget(
-                              {
-                                type: "row",
-                                index: row,
-                              },
-                            )
+                            setPaintTarget({
+                              type: "row",
+                              index: row,
+                            })
                           }
                           aria-label={`${ROW_GROUP_NAMES[row]} 전체 칠하기`}
                         >
-                          {
-                            rowMember.name
-                          }
+                          {rowMember.name}
                         </button>
                       </th>
 
@@ -1213,8 +1101,7 @@ export default function MiddleChart() {
                           column,
                         ) => {
                           if (
-                            row ===
-                            column
+                            row === column
                           ) {
                             return (
                               <td
@@ -1231,19 +1118,13 @@ export default function MiddleChart() {
 
                           const legend =
                             legendMap.get(
-                              state
-                                .chart
-                                .cells[
+                              state.chart.cells[
                                 key
                               ] ?? "",
                             );
 
                           const pairName =
-                            PAIR_NAMES[
-                              row
-                            ][
-                              column
-                            ];
+                            PAIR_NAMES[row][column];
 
                           return (
                             <td
@@ -1263,13 +1144,11 @@ export default function MiddleChart() {
                                       : undefined,
                                 }}
                                 onClick={() =>
-                                  setPaintTarget(
-                                    {
-                                      type: "cell",
-                                      row,
-                                      column,
-                                    },
-                                  )
+                                  setPaintTarget({
+                                    type: "cell",
+                                    row,
+                                    column,
+                                  })
                                 }
                                 aria-label={`${pairName}${legend ? `, ${legend.name}` : ", 미선택"}`}
                                 title={`${pairName}${legend ? ` · ${legend.name}` : ""}`}
@@ -1282,9 +1161,7 @@ export default function MiddleChart() {
                                       : undefined
                                   }
                                 >
-                                  {
-                                    pairName
-                                  }
+                                  {pairName}
                                 </span>
                               </button>
                             </td>
@@ -1319,8 +1196,7 @@ export default function MiddleChart() {
                 >
                   <span
                     className={`legend-dot${
-                      legend.id ===
-                      "neutral"
+                      legend.id === "neutral"
                         ? " transparent-swatch"
                         : ""
                     }`}
@@ -1334,9 +1210,7 @@ export default function MiddleChart() {
                     aria-hidden="true"
                   />
 
-                  <span>
-                    {legend.name}
-                  </span>
+                  <span>{legend.name}</span>
                 </div>
               ),
             )}
@@ -1356,17 +1230,13 @@ export default function MiddleChart() {
                 }
                 onChange={(event) => {
                   const checked =
-                    event.target
-                      .checked;
+                    event.target.checked;
 
                   dispatch({
                     type: "commit",
-                    change: (
-                      chart,
-                    ) => ({
+                    change: (chart) => ({
                       ...chart,
-                      showDate:
-                        checked,
+                      showDate: checked,
                     }),
                   });
                 }}
@@ -1409,10 +1279,7 @@ export default function MiddleChart() {
                 }
               >
                 <Icon name="trash" />
-
-                <span>
-                  초기화
-                </span>
+                <span>초기화</span>
               </button>
             </div>
           </div>
@@ -1432,8 +1299,7 @@ export default function MiddleChart() {
             target="_blank"
             rel="noreferrer"
           >
-            Original:
-            cortis-rps-chart by 쵸비
+            Original: cortis-rps-chart by 쵸비
           </a>
         </footer>
       </article>
@@ -1451,9 +1317,7 @@ export default function MiddleChart() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="paint-picker-title"
-            onPointerDown={(
-              event,
-            ) =>
+            onPointerDown={(event) =>
               event.stopPropagation()
             }
           >
@@ -1472,9 +1336,7 @@ export default function MiddleChart() {
                 className="close-button"
                 type="button"
                 onClick={() =>
-                  setPaintTarget(
-                    null,
-                  )
+                  setPaintTarget(null)
                 }
                 aria-label="닫기"
               >
